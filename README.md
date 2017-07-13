@@ -29,49 +29,17 @@ If infrastructures are to be treated as a code than projects that manage them mu
 This is the directory layout of this repository with explanation.
 
 
-    production.ini            # inventory file for production stage
-    development.ini           # inventory file for development stage
-    test.ini                  # inventory file for test stage
-    vpass                     # ansible-vault password file
-                              # This file should not be committed into the repository
-                              # therefore file is in ignored by git
-    group_vars/
-        all/                  # variables under this directory belongs all the groups
-            apt.yml           # ansible-apt role variable file for all groups
-        webservers/           # here we assign variables to webservers groups
-            apt.yml           # Each file will correspond to a role i.e. apt.yml
-            nginx.yml         # ""
-        postgresql/           # here we assign variables to postgresql groups
-            postgresql.yml    # Each file will correspond to a role i.e. postgresql
-            postgresql-password.yml   # Encrypted password file
-    plays/
-        ansible.cfg           # Ansible.cfg file that holds all ansible config
-        webservers.yml        # playbook for webserver tier
-        postgresql.yml        # playbook for postgresql tier
-
-    roles/
-        roles_requirements.yml# All the information about the roles
-        external              # All the roles that are in git or ansible galaxy
-                              # Roles that are in roles_requirements.yml file will be downloaded into this directory
-        internal              # All the roles that are not public
-
-    extension/
-        setup                 # All the setup files for updating roles and ansible dependencies
-
 
 ## 2. How to Manage Roles
 It is a bad habit to manage the roles that are developed by other developers, in your git repository manually. It is also important to separate them so that you can distinguish those that are external and can be updated vs those that are internal. Therefore, you can use ansible-galaxy for installing the roles you need, at the location you need, by simply defining them in the roles_requirements.yml:
 
 ```
 ---
-- src: ANXS.build-essential
-  version: "v1.0.1"
 ```
 
 Roles can be downloaded/updated with this command:
 
 ```
-./extensions/setup/role_update.sh
 ```
 This command will delete all external roles and download everything from scratch. It is a good practice, as this will not allow you to make changes in the roles.
 
@@ -118,13 +86,11 @@ There is also [git-crypt](https://github.com/AGWA/git-crypt) that allow you to w
 As it should be very easy to set-up the work environment, all required packages that ansible needs, as well as ansible should be installed very easily. This will allow newcomers or developers to start using ansible project very fast and easy. Therefore, python_requirements.txt file is located at:
 
 ```
-extensions/setup/python_requirements.txt
 ```
 
 This structure will help you to keep your dependencies in a single place, as well as making it easier to install everything including ansible. All you have to do is to execute the setup file:
 
 ```
-./extensions/setup/setup.sh
 ```
 
 
@@ -132,17 +98,14 @@ This structure will help you to keep your dependencies in a single place, as wel
 Code in this repo is functional and test it. To run it, you need to install ansible and all the dependencies. You can do this simply by executing:
 
 ```
-./extensions/setup/setup.sh
 ```
 
 * If you already have ansible, and you do not want to go through the installation simply create a vpass text file in the root directory and add the secret code (123456)
 * To install roles execure the role_update.sh which will download all the roles
 ```
-./extensions/setup/role_update.sh
 ```
 * Go to plays directory and the execute and do not forget to change the host address in the development.ini
 ```
-ansible-playbook -i ../development.ini webservers.yml
 ```
 
 
